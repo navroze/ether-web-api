@@ -1,4 +1,5 @@
 const Web3 = require('web3');
+const validator = require('./validation-helper');
 const { web3Config:{ infuraUrl, senderAddress } } = require('../config');
 const { getCurrentGasPrices } = require('../lib/util');
 const log = require('ololog').configure({ time: true });
@@ -26,11 +27,14 @@ web3.createWallet = () => {
 */
 web3.getBalance = async (address, callback) => {
 	try{
+		const {status, message} = validator.getBalance(address);
+		if(!status) return {message};
 		let balance = await web3Conn.eth.getBalance(address);
 		balance = web3Conn.utils.fromWei(balance, 'ether');
 		return {address, balance};
 	} catch(error) {
-		throw error;
+		log(`Found error in getBalance ${error}`.red);
+		return {message:"Something went wrong"};
 	}
 };
 
@@ -39,8 +43,10 @@ web3.getBalance = async (address, callback) => {
 	* Send ethereum from source to destination
 	* Use web3 1.0 to sign a transaction and then send it using signedtransaction method.
 */
-web3.sendEther = async ({amount, destination, privateKey}) => {
+web3.sendTransaction = async ({amount, destination, privateKey}) => {
 	try {
+		const {status, message} = validator.sendTransaction({amount, destination, privateKey});
+		if(!status)  return {message};
 		web3Conn.eth.defaultAccount = senderAddress;
 		let myBalanceWei = await web3Conn.eth.getBalance(web3Conn.eth.defaultAccount);
 		let myBalance = web3Conn.utils.fromWei(myBalanceWei, 'ether');
@@ -73,7 +79,8 @@ web3.sendEther = async ({amount, destination, privateKey}) => {
   		let transactionDetails = await web3Conn.eth.sendSignedTransaction(rawTransaction);
 
 	} catch (error) {
-		console.log("Error", error);
+		log(`Found error in sendTransaction ${error}`.red);
+		return {message:"Something went wrong"};
 	}
 };
 

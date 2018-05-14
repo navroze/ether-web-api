@@ -19,7 +19,7 @@ util.getCurrentGasPrices = async () =>{
 		console.log("\r\n");
 		log(`Low: ${prices.low} (transaction completes in < 30 minutes)`.green);
 		log(`Standard: ${prices.medium} (transaction completes in < 5 minutes)`.yellow);
-		log(`Fast: ${prices.high} (transaction completes in < 2 minutes)`.red);
+		log(`Fast: ${prices.high} (transaction completes in < 2 minutes)`.blue);
 		console.log("\r\n");
 		return prices;
 
