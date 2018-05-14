@@ -16,7 +16,9 @@ let web3 = {};
 */
 web3.createWallet = () => {
 	const { address, privateKey } = web3Conn.eth.accounts.create();
+	log(`Private key before encryption ${privateKey}`.yellow);
 	let {crypto:{mac}} = web3Conn.eth.accounts.encrypt(privateKey, 'test!');
+	log(`Wallet ${address} created with encrypted privat -key=${mac}`.green);
 	return {address, privateKey: mac};
 };
 
@@ -31,6 +33,7 @@ web3.getBalance = async (address, callback) => {
 		if(!status) return {message};
 		let balance = await web3Conn.eth.getBalance(address);
 		balance = web3Conn.utils.fromWei(balance, 'ether');
+		log(`Your wallet balance is=${balance} ETH for address=${address}`.green);
 		return {address, balance};
 	} catch(error) {
 		log(`Found error in getBalance ${error}`.red);
